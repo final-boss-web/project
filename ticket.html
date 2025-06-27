@@ -1,0 +1,607 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bus Ticket</title>
+  <link rel="stylesheet" href="./css/home.css">
+  <!-- <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f0f4f8;
+    }
+
+    .head_nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #007bff;
+      padding: 10px 20px;
+      color: white;
+    }
+
+    .head_nav a.h {
+      font-size: 24px;
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .active_nav a.click {
+      margin: 0 10px;
+      color: white;
+      text-decoration: none;
+      font-size: 16px;
+    }
+
+    .auth-link {
+      background-color: #fff;
+      color: #007bff;
+      border: none;
+      padding: 5px 10px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    main {
+      padding: 30px 20px;
+    }-->
+  
+     <!-- .section {
+      background-color: white;
+      border-radius: 8px;
+      padding: 20px;
+      max-width: 750px;
+      margin: 0 auto;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }  -->
+<!--
+    ul#ticket {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    ul#ticket li {
+      background-color: #e9f5ff;
+      margin: 10px 0;
+      padding: 15px;
+      border-left: 4px solid #007bff;
+      border-radius: 5px;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style> 
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+    <header>
+  <div class="head_nav">
+    <div class="logo">
+      <a href="home.html" class="h">🚌 Bus Booking</a>
+    </div>
+
+    <div class="menu-toggle" id="menu-toggle">&#9776;</div> 
+
+    <div class="active_nav" id="nav-links">
+      <a href="home.html" class="click">Home</a>
+      <a href="booking.html" class="click">Ticket Booking</a>
+      <a href="about-us.html" class="click">About us</a>
+      <a href="login.html" id="auth-link">
+        <button class="auth-link">Sign In</button>
+      </a>
+    </div>
+  </div>
+</header>
+
+
+
+  <main>
+    <div class="section">
+      <h3>🎫 Your Booked Tickets</h3>
+      <ul id="ticket"><li>Loading...</li></ul>
+      <button onclick="downloadPDF()">📥 Download All Tickets (PDF)</button>
+    </div>
+       <footer class="footer">
+      <div class="vaibhav">
+        <div class="footer-container">
+          <div class="footer-logo">
+            <h2>🚌 Bus Booking</h2>
+            <p class="footer-info">Your travel partner for exams, events, and more.</p>
+          </div>
+
+          <div class="footer-links">
+            <h3>Quick Links</h3>
+            <ul>
+              <li class="link-nav"><a href="home.html" class="footer-info">Home</a></li>
+              <li class="link-nav"><a href="#" class="footer-info">Profile</a></li>
+              <li class="link-nav"><a href="about-us.html" class="footer-info">About Us</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-contact">
+            <h3 class="footer-info">Contact</h3>
+            <p class="footer-info">Email: support@busbooking.com</p>
+            <p class="footer-info">Phone: +91 98765 43210</p>
+            <p class="footer-info">Mathura, Uttar Pradesh</p>
+          </div>
+        </div>
+
+        <div class="footer-bottom">
+          <p style="color: white;">© 2025 Bus Booking. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <script>
+    let ticketData = [];
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      const token = localStorage.getItem("studentToken");
+      const studentName = localStorage.getItem("studentName");
+      const navDiv = document.querySelector(".active_nav");
+
+      // Update navbar if logged in
+      if (token && navDiv) {
+        const signInBtn = navDiv.querySelector(".auth-link");
+        if (signInBtn) signInBtn.remove();
+
+        const welcome = document.createElement("span");
+        welcome.textContent = `👋 Welcome, ${studentName || "Student"}`;
+        welcome.style.color = "white";
+        welcome.style.marginRight = "10px";
+        navDiv.appendChild(welcome);
+
+        const ticketLink = document.createElement("a");
+        ticketLink.href = "ticket.html";
+        ticketLink.className = "click";
+        ticketLink.textContent = "My Ticket";
+        navDiv.appendChild(ticketLink);
+
+        const logoutBtn = document.createElement("button");
+        logoutBtn.className = "auth-link";
+        logoutBtn.textContent = "Logout";
+        logoutBtn.onclick = () => {
+          localStorage.clear();
+          alert("Logged out successfully!");
+          window.location.href = "home.html";
+        };
+        navDiv.appendChild(logoutBtn);
+      }
+
+      if (!token) {
+        alert("User not logged in.");
+        window.location.href = "login.html";
+        return;
+      }
+
+      try {
+        const res = await fetch("/bookings", {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        if (!res.ok) throw new Error("Failed to fetch ticket data");
+
+        const bookings = await res.json();
+        ticketData = bookings;
+
+        const ticketList = document.getElementById("ticket");
+        ticketList.innerHTML = "";
+
+        if (bookings.length === 0) {
+          ticketList.innerHTML = "<li>No bookings found.</li>";
+          return;
+        }
+
+        bookings.forEach((b, index) => {
+          const ticketNumber = generateTicketNumber(b.busId.name, b._id, index);
+          const li = document.createElement("li");
+          li.innerHTML = `
+            <strong>Ticket No:</strong> ${ticketNumber}<br>
+            <strong>Student Name:</strong> ${b.studentId.name}<br>
+            <strong>Email:</strong> ${b.studentId.email}<br>
+            <strong>Mobile:</strong> ${b.studentId.mobile}<br>
+            <strong>University Roll:</strong> ${b.studentId.university}<br>
+            <strong>Date:</strong> ${new Date(b.date).toDateString()}<br>
+            <strong>Bus:</strong> ${b.busId.name}<br>
+            <strong>Pickup:</strong> ${b.pickupPoint}<br>
+            <strong>Exam Center:</strong> ${b.examCenter}<br>
+            <strong>Price:</strong> ₹${b.price}<br>
+            <button onclick="downloadSinglePDF(${index})">📄 Download This Ticket</button>
+          `;
+          b.ticketNumber = ticketNumber;
+          ticketList.appendChild(li);
+        });
+      } catch (err) {
+        console.error(err);
+        document.getElementById("ticket").innerHTML = "<li>Error loading tickets.</li>";
+      }
+    });
+
+    function generateTicketNumber(busName, bookingId, index) {
+      const idSuffix = bookingId ? bookingId.slice(-6).toUpperCase() : String(index + 1).padStart(6, '0');
+      const cleanBus = busName.replace(/[^A-Z0-9]/gi, '').toUpperCase();
+      return `TKT-${cleanBus}-${idSuffix}`;
+    }
+
+    function downloadSinglePDF(index) {
+      const { jsPDF } = window.jspdf;
+      const b = ticketData[index];
+      if (!b) return;
+
+      const doc = new jsPDF();
+      const ticketNumber = b.ticketNumber;
+
+      doc.setFontSize(18);
+      doc.setTextColor(40, 40, 255);
+      doc.text("Bus Booking Ticket", 20, 20);
+
+      doc.setFontSize(12);
+      doc.setTextColor(0, 0, 0);
+      let y = 30;
+      doc.text(`Ticket No: ${ticketNumber}`, 20, y);
+      doc.text(`Name: ${b.studentId.name}`, 20, y + 8);
+      doc.text(`Email: ${b.studentId.email}`, 20, y + 16);
+      doc.text(`Mobile: ${b.studentId.mobile}`, 20, y + 24);
+      doc.text(`University Roll: ${b.studentId.university}`, 20, y + 32);
+      doc.text(`Date: ${new Date(b.date).toDateString()}`, 20, y + 40);
+      doc.text(`Bus: ${b.busId.name}`, 20, y + 48);
+      doc.text(`Pickup: ${b.pickupPoint}`, 20, y + 56);
+      doc.text(`Exam Center: ${b.examCenter}`, 20, y + 64);
+      doc.text(`Price: ₹${b.price}`, 20, y + 72);
+
+      doc.setFontSize(10);
+      doc.setTextColor(100);
+      doc.text("Generated by Bus Booking System", 20, 290);
+
+      doc.save(`${ticketNumber}.pdf`);
+    }
+
+    function downloadPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      let y = 20;
+
+      doc.setFontSize(18);
+      doc.setTextColor(40, 40, 255);
+      doc.text("YOUR Ticket", 45, y);
+      y += 10;
+
+      if (ticketData.length === 0) {
+        alert("No ticket data to download.");
+        return;
+      }
+
+      ticketData.forEach((b, index) => {
+        const ticketNumber = b.ticketNumber || generateTicketNumber(b.busId.name, b._id, index);
+        b.ticketNumber = ticketNumber;
+
+        if (y > 250) {
+          doc.addPage();
+          y = 20;
+        }
+
+        doc.setFontSize(12);
+        doc.setTextColor(0, 0, 0);
+        doc.text(`Ticket No: ${ticketNumber}`, 20, y);
+        doc.text(`Name: ${b.studentId.name}`, 20, y + 8);
+        doc.text(`Email: ${b.studentId.email}`, 20, y + 16);
+        doc.text(`Mobile: ${b.studentId.mobile}`, 20, y + 24);
+        doc.text(`University Roll: ${b.studentId.university}`, 20, y + 32);
+        doc.text(`Date: ${new Date(b.date).toDateString()}`, 20, y + 40);
+        doc.text(`Bus: ${b.busId.name}`, 20, y + 48);
+        doc.text(`Pickup: ${b.pickupPoint}`, 20, y + 56);
+        doc.text(`Exam Center: ${b.examCenter}`, 20, y + 64);
+        doc.text(`Price: ₹${b.price}`, 20, y + 72);
+        y += 85;
+      });
+
+      doc.setFontSize(10);
+      doc.setTextColor(100);
+      doc.text("Generated by Bus Booking System", 20, 290);
+
+      doc.save("All-Bus-Tickets.pdf");
+    }
+  </script>
+  <script>
+    document.getElementById('menu-toggle').addEventListener('click', () => {
+  document.querySelector('.active_nav').classList.toggle('show');
+});
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const token = localStorage.getItem("studentToken");
+      const studentName = localStorage.getItem("studentName");
+      const navDiv = document.querySelector('.active_nav');
+
+      if (token && navDiv) {
+        const signInBtn = navDiv.querySelector('.auth-link');
+        if (signInBtn) signInBtn.remove();
+
+        const welcomeSpan = document.createElement("span");
+        welcomeSpan.textContent = `👋 Welcome, ${studentName || "Student"}`;
+        welcomeSpan.style.color = "white";
+        welcomeSpan.style.marginRight = "10px";
+        navDiv.appendChild(welcomeSpan);
+
+        const ticketLink = document.createElement("a");
+        ticketLink.href = "ticket.html";
+        ticketLink.className = "click";
+        ticketLink.textContent = "My Ticket";
+        navDiv.appendChild(ticketLink);
+
+        const logoutBtn = document.createElement("button");
+        logoutBtn.className = "auth-link";
+        logoutBtn.textContent = "Logout";
+        logoutBtn.onclick = () => {
+          localStorage.removeItem("studentToken");
+          localStorage.removeItem("studentName");
+          alert("Logged out successfully!");
+          window.location.href = "home.html";
+        };
+        navDiv.appendChild(logoutBtn);
+      }
+    });
+  </script>
+</body>
+</html>  -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bus Ticket</title>
+  <link rel="stylesheet" href="./css/ticket.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+  <header>
+    <div class="head_nav">
+      <div class="logo">
+        <a href="home.html" class="h">🚌 Bus Booking</a>
+      </div>
+
+      <div class="menu-toggle" id="menu-toggle">&#9776;</div> <!-- Hamburger icon -->
+
+      <div class="active_nav" id="nav-links">
+        <a href="home.html" class="click">Home</a>
+        <a href="booking.html" class="click">Ticket Booking</a>
+        <a href="about-us.html" class="click">About us</a>
+        <a href="login.html" id="auth-link">
+          <button class="auth-link">Sign In</button>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="section">
+      <h3>🎫 Your Booked Tickets</h3>
+      <ul id="ticket"><li>Loading...</li></ul>
+      <button onclick="downloadPDF()">📥 Download All Tickets (PDF)</button>
+    </div>
+
+    <footer class="footer">
+      <div class="vaibhav">
+        <div class="footer-container">
+          <div class="footer-logo">
+            <h2>🚌 Bus Booking</h2>
+            <p class="footer-info">Your travel partner for exams, events, and more.</p>
+          </div>
+
+          <div class="footer-links">
+            <h3>Quick Links</h3>
+            <ul>
+              <li class="link-nav"><a href="home.html" class="footer-info">Home</a></li>
+              <li class="link-nav"><a href="#" class="footer-info">Profile</a></li>
+              <li class="link-nav"><a href="about-us.html" class="footer-info">About Us</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-contact">
+            <h3 class="footer-info">Contact</h3>
+            <p class="footer-info">Email: support@busbooking.com</p>
+            <p class="footer-info">Phone: +91 98765 43210</p>
+            <p class="footer-info">Mathura, Uttar Pradesh</p>
+          </div>
+        </div>
+
+        <div class="footer-bottom">
+          <p style="color: white;">© 2025 Bus Booking. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <script>
+    let ticketData = [];
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      const token = localStorage.getItem("studentToken");
+      const studentName = localStorage.getItem("studentName");
+      const navDiv = document.querySelector(".active_nav");
+
+      // Navbar update if logged in
+      if (token && navDiv) {
+        const signInBtn = navDiv.querySelector(".auth-link");
+        if (signInBtn) signInBtn.remove();
+
+        const welcome = document.createElement("span");
+        welcome.textContent = `👋 Welcome, ${studentName || "Student"}`;
+        welcome.style.color = "white";
+        welcome.style.marginRight = "10px";
+        navDiv.appendChild(welcome);
+
+        const ticketLink = document.createElement("a");
+        ticketLink.href = "ticket.html";
+        ticketLink.className = "click";
+        ticketLink.textContent = "My Ticket";
+        navDiv.appendChild(ticketLink);
+
+        const logoutBtn = document.createElement("button");
+        logoutBtn.className = "auth-link";
+        logoutBtn.textContent = "Logout";
+        logoutBtn.onclick = () => {
+          localStorage.clear();
+          alert("Logged out successfully!");
+          window.location.href = "home.html";
+        };
+        navDiv.appendChild(logoutBtn);
+      }
+
+      if (!token) {
+        alert("User not logged in.");
+        window.location.href = "login.html";
+        return;
+      }
+
+      try {
+        const res = await fetch("/bookings", {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        if (!res.ok) throw new Error("Failed to fetch ticket data");
+
+        const bookings = await res.json();
+        ticketData = bookings;
+
+        const ticketList = document.getElementById("ticket");
+        ticketList.innerHTML = "";
+
+        if (bookings.length === 0) {
+          ticketList.innerHTML = "<li>No bookings found.</li>";
+          return;
+        }
+
+        bookings.forEach((b, index) => {
+          const ticketNumber = generateTicketNumber(b.busId.name, b._id, index);
+          const li = document.createElement("li");
+          li.innerHTML = `
+            <strong>Ticket No:</strong> ${ticketNumber}<br>
+            <strong>Student Name:</strong> ${b.studentId.name}<br>
+            <strong>Email:</strong> ${b.studentId.email}<br>
+            <strong>Mobile:</strong> ${b.studentId.mobile}<br>
+            <strong>University Roll:</strong> ${b.studentId.university}<br>
+            <strong>Date:</strong> ${new Date(b.date).toDateString()}<br>
+            <strong>Bus:</strong> ${b.busId.name}<br>
+            <strong>Pickup:</strong> ${b.pickupPoint}<br>
+            <strong>Exam Center:</strong> ${b.examCenter}<br>
+            <strong>Price:</strong> ₹${b.price}<br>
+            <button onclick="downloadSinglePDF(${index})">📄 Download This Ticket</button>
+          `;
+          b.ticketNumber = ticketNumber;
+          ticketList.appendChild(li);
+        });
+      } catch (err) {
+        console.error(err);
+        document.getElementById("ticket").innerHTML = "<li>Error loading tickets.</li>";
+      }
+    });
+
+    function generateTicketNumber(busName, bookingId, index) {
+      const idSuffix = bookingId ? bookingId.slice(-6).toUpperCase() : String(index + 1).padStart(6, '0');
+      const cleanBus = busName.replace(/[^A-Z0-9]/gi, '').toUpperCase();
+      return `TKT-${cleanBus}-${idSuffix}`;
+    }
+
+    function downloadSinglePDF(index) {
+      const { jsPDF } = window.jspdf;
+      const b = ticketData[index];
+      if (!b) return;
+
+      const doc = new jsPDF();
+      const ticketNumber = b.ticketNumber;
+
+      doc.setFontSize(18);
+      doc.setTextColor(40, 40, 255);
+      doc.text("Bus Booking Ticket", 20, 20);
+
+      doc.setFontSize(12);
+      doc.setTextColor(0, 0, 0);
+      let y = 30;
+      doc.text(`Ticket No: ${ticketNumber}`, 20, y);
+      doc.text(`Name: ${b.studentId.name}`, 20, y + 8);
+      doc.text(`Email: ${b.studentId.email}`, 20, y + 16);
+      doc.text(`Mobile: ${b.studentId.mobile}`, 20, y + 24);
+      doc.text(`University Roll: ${b.studentId.university}`, 20, y + 32);
+      doc.text(`Date: ${new Date(b.date).toDateString()}`, 20, y + 40);
+      doc.text(`Bus: ${b.busId.name}`, 20, y + 48);
+      doc.text(`Pickup: ${b.pickupPoint}`, 20, y + 56);
+      doc.text(`Exam Center: ${b.examCenter}`, 20, y + 64);
+      doc.text(`Price: ₹${b.price}`, 20, y + 72);
+
+      doc.setFontSize(10);
+      doc.setTextColor(100);
+      doc.text("Generated by Bus Booking System", 20, 290);
+
+      doc.save(`${ticketNumber}.pdf`);
+    }
+
+    function downloadPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      let y = 20;
+
+      doc.setFontSize(18);
+      doc.setTextColor(40, 40, 255);
+      doc.text("YOUR Ticket", 45, y);
+      y += 10;
+
+      if (ticketData.length === 0) {
+        alert("No ticket data to download.");
+        return;
+      }
+
+      ticketData.forEach((b, index) => {
+        const ticketNumber = b.ticketNumber || generateTicketNumber(b.busId.name, b._id, index);
+        b.ticketNumber = ticketNumber;
+
+        if (y > 250) {
+          doc.addPage();
+          y = 20;
+        }
+
+        doc.setFontSize(12);
+        doc.setTextColor(0, 0, 0);
+        doc.text(`Ticket No: ${ticketNumber}`, 20, y);
+        doc.text(`Name: ${b.studentId.name}`, 20, y + 8);
+        doc.text(`Email: ${b.studentId.email}`, 20, y + 16);
+        doc.text(`Mobile: ${b.studentId.mobile}`, 20, y + 24);
+        doc.text(`University Roll: ${b.studentId.university}`, 20, y + 32);
+        doc.text(`Date: ${new Date(b.date).toDateString()}`, 20, y + 40);
+        doc.text(`Bus: ${b.busId.name}`, 20, y + 48);
+        doc.text(`Pickup: ${b.pickupPoint}`, 20, y + 56);
+        doc.text(`Exam Center: ${b.examCenter}`, 20, y + 64);
+        doc.text(`Price: ₹${b.price}`, 20, y + 72);
+        y += 85;
+      });
+
+      doc.setFontSize(10);
+      doc.setTextColor(100);
+      doc.text("Generated by Bus Booking System", 20, 290);
+
+      doc.save("All-Bus-Tickets.pdf");
+    }
+
+    // Toggle mobile menu
+    document.getElementById('menu-toggle').addEventListener('click', () => {
+      document.querySelector('.active_nav').classList.toggle('show');
+    });
+  </script>
+</body>
+</html>

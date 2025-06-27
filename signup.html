@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Student Signup</title>
+  <link rel="stylesheet" href="./css/home.css">
+</head>
+<body>
+   <footer class="footer">
+      <div class="vaibhav">
+        <div class="footer-container">
+          <div class="footer-logo">
+            <h2>🚌 Bus Booking</h2>
+            <p class="footer-info">Your travel partner for exams, events, and more.</p>
+          </div>
+
+          <div class="footer-links">
+            <h3>Quick Links</h3>
+            <ul>
+              <li class="link-nav"><a href="home.html" class="footer-info">Home</a></li>
+              <li class="link-nav"><a href="#" class="footer-info">Profile</a></li>
+              <li class="link-nav"><a href="about-us.html" class="footer-info">About Us</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-contact">
+            <h3 class="footer-info">Contact</h3>
+            <p class="footer-info">Email: support@busbooking.com</p>
+            <p class="footer-info">Phone: +91 98765 43210</p>
+            <p class="footer-info">Mathura, Uttar Pradesh</p>
+          </div>
+        </div>
+
+        <div class="footer-bottom">
+          <p style="color: white;">© 2025 Bus Booking. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+
+  <main>
+    <h1>Student Signup</h1>
+    <form id="signupForm">
+      <label for="name">Full Name:</label><br/>
+      <input type="text" id="name" required/><br/><br/>
+
+      <label for="email">Email:</label><br/>
+      <input type="email" id="email" required/><br/><br/>
+
+      <label for="mobile">Mobile No:</label><br/>
+      <input type="number" id="mobile" required/><br/><br/>
+
+      <label for="university">university Roll number:</label><br/>
+      <input type="number" id="university" required/><br/><br/>
+      
+      <label for="parentmobile"> Parent Mobile number:</label><br>
+      <input type="number" id="parentmobile" required> <br/><br/>
+
+
+      <label for="password">Password:</label><br/>
+      <!-- <input type="password" id="password" required/><br/><br/> -->
+       <input type="password" id="password" placeholder="Enter your password" required />
+
+
+      <button type="submit">Sign Up</button>
+      <div id="message" style="color:green;"></div>
+      <div id="error" style="color:red;"></div>
+    </form>
+    
+  </main>
+
+  <script src="signup.js"></script>
+  <script>
+    document.getElementById('menu-toggle').addEventListener('click', () => {
+  document.querySelector('.active_nav').classList.toggle('show');
+});
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const token = localStorage.getItem("studentToken");
+      const studentName = localStorage.getItem("studentName");
+      const navDiv = document.querySelector('.active_nav');
+
+      if (token && navDiv) {
+        const signInBtn = navDiv.querySelector('.auth-link');
+        if (signInBtn) signInBtn.remove();
+
+        const welcomeSpan = document.createElement("span");
+        welcomeSpan.textContent = `👋 Welcome, ${studentName || "Student"}`;
+        welcomeSpan.style.color = "white";
+        welcomeSpan.style.marginRight = "10px";
+        navDiv.appendChild(welcomeSpan);
+
+        const ticketLink = document.createElement("a");
+        ticketLink.href = "ticket.html";
+        ticketLink.className = "click";
+        ticketLink.textContent = "My Ticket";
+        navDiv.appendChild(ticketLink);
+
+        const logoutBtn = document.createElement("button");
+        logoutBtn.className = "auth-link";
+        logoutBtn.textContent = "Logout";
+        logoutBtn.onclick = () => {
+          localStorage.removeItem("studentToken");
+          localStorage.removeItem("studentName");
+          alert("Logged out successfully!");
+          window.location.href = "home.html";
+        };
+        navDiv.appendChild(logoutBtn);
+      }
+    });
+  </script>
+</body>
+</html>

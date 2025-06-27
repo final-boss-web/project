@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ticket Booking</title>
+  <link rel="stylesheet" href="./css/booking.css" />
+  <link rel="stylesheet" href="./css/home.css" />
+</head>
+<body>
+   
+
+  <main>
+      <header>
+  <div class="head_nav">
+    <div class="logo">
+      <a href="home.html" class="h">🚌 Bus Booking</a>
+    </div>
+
+    <div class="menu-toggle" id="menu-toggle">&#9776;</div> <!-- Hamburger icon -->
+
+    <div class="active_nav" id="nav-links">
+      <a href="home.html" class="click">Home</a>
+      <a href="booking.html" class="click">Ticket Booking</a>
+      <a href="about-us.html" class="click">About us</a>
+      <a href="login.html" id="auth-link">
+        <button class="auth-link">Sign In</button>
+      </a>
+    </div>
+  </div>
+</header>
+    <h1>Book Your Ticket</h1>
+    
+    <form id="bookingForm">
+      <label for="date">Select Date:</label><br />
+      <input type="date" id="date" name="date" required /><br /><br />
+
+      <label for="pickup">Pickup Point:</label><br />
+      <select id="pickup" name="pickup" required>
+        <option value="">Select Pickup Point</option>
+      </select><br /><br />
+
+      <label for="examCenter">Exam Center:</label><br />
+      <select id="examCenter" name="examCenter" required>
+        <option value="">Select Exam Center</option>
+      </select><br /><br />
+
+      <label for="time">Select Time:</label><br />
+      <select id="time" name="time" required>
+        <option value="">Select Time</option>
+        <option value="forenoon">Forenoon</option>
+        <option value="afternoon">Afternoon</option>
+      </select><br /><br />
+
+      <button type="button" id="searchBtn">🔍 Search Bus</button><br /><br />
+      <div id="info"></div><br />
+
+      <!-- ✅ Updated button type -->
+      <button type="button" id="payBtn" style="display: none;">Proceed to Payment</button>
+    </form>
+    <footer class="footer">
+      <div class="vaibhav">
+        <div class="footer-container">
+          <div class="footer-logo">
+            <h2>🚌 Bus Booking</h2>
+            <p class="footer-info">Your travel partner for exams, events, and more.</p>
+          </div>
+
+          <div class="footer-links">
+            <h3>Quick Links</h3>
+            <ul>
+              <li class="link-nav"><a href="home.html" class="footer-info">Home</a></li>
+              <li class="link-nav"><a href="#" class="footer-info">Profile</a></li>
+              <li class="link-nav"><a href="about-us.html" class="footer-info">About Us</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-contact">
+            <h3 class="footer-info">Contact</h3>
+            <p class="footer-info">Email: support@busbooking.com</p>
+            <p class="footer-info">Phone: +91 98765 43210</p>
+            <p class="footer-info">Mathura, Uttar Pradesh</p>
+          </div>
+        </div>
+
+        <div class="footer-bottom">
+          <p style="color: white;">© 2025 Bus Booking. All rights reserved.</p>
+        </div>
+      </div>
+    </footer> 
+  </main>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      const token = localStorage.getItem('studentToken');
+      const studentName = localStorage.getItem('studentName');
+      const nav = document.getElementById('navLinks');
+      const authLink = document.getElementById('auth-link');
+
+      if (!token) {
+        alert('Please log in first to book your ticket.');
+        window.location.href = 'login.html';
+        return;
+      }
+
+      if (studentName) {
+        if (authLink) authLink.remove();
+
+        const welcome = document.createElement('span');
+        welcome.textContent = `👋 Welcome, ${studentName}`;
+        welcome.style.color = 'white';
+        welcome.style.margin = '0 10px';
+        nav.appendChild(welcome);
+
+        const logoutBtn = document.createElement('button');
+        logoutBtn.textContent = 'Logout';
+        logoutBtn.className = 'auth-link';
+        logoutBtn.onclick = () => {
+          localStorage.removeItem('studentToken');
+          localStorage.removeItem('studentName');
+          alert('Logged out successfully');
+          window.location.href = 'login.html';
+        };
+        nav.appendChild(logoutBtn);
+      }
+    });
+  </script>
+
+  <script src="booking.js"></script>
+  <script>
+    document.getElementById('menu-toggle').addEventListener('click', () => {
+  document.querySelector('.active_nav').classList.toggle('show');
+});
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const token = localStorage.getItem("studentToken");
+      const studentName = localStorage.getItem("studentName");
+      const navDiv = document.querySelector('.active_nav');
+
+      if (token && navDiv) {
+        const signInBtn = navDiv.querySelector('.auth-link');
+        if (signInBtn) signInBtn.remove();
+
+        const welcomeSpan = document.createElement("span");
+        welcomeSpan.textContent = `👋 Welcome, ${studentName || "Student"}`;
+        welcomeSpan.style.color = "white";
+        welcomeSpan.style.marginRight = "10px";
+        navDiv.appendChild(welcomeSpan);
+
+        const ticketLink = document.createElement("a");
+        ticketLink.href = "ticket.html";
+        ticketLink.className = "click";
+        ticketLink.textContent = "My Ticket";
+        navDiv.appendChild(ticketLink);
+
+        const logoutBtn = document.createElement("button");
+        logoutBtn.className = "auth-link";
+        logoutBtn.textContent = "Logout";
+        logoutBtn.onclick = () => {
+          localStorage.removeItem("studentToken");
+          localStorage.removeItem("studentName");
+          alert("Logged out successfully!");
+          window.location.href = "home.html";
+        };
+        navDiv.appendChild(logoutBtn);
+      }
+    });
+  </script>
+</body>
+</html>

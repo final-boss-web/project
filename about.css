@@ -1,0 +1,149 @@
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #f8f9fa;
+  color: #333;
+  line-height: 1.6;
+}
+header
+{
+    background-color: #003366;
+    height: 85px;
+}
+.head_nav
+{
+    position: sticky;
+    top: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0 1rem 0;
+    margin-left: 20px;
+}
+.h
+{
+    font-size: 25px;
+    color: #fff;
+    text-decoration: none;
+}
+.click
+{
+    text-decoration: none;
+    color: #e0e0e0;
+    padding: 7px;
+}
+.about-section {
+  padding: 40px 20px;
+  background-color: #fff;
+}
+
+.container {
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+  background-color: #ffffff;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
+}
+
+h1 {
+  text-align: center;
+  color: #007bff;
+  margin-bottom: 20px;
+}
+
+h2 {
+  color: #444;
+  margin-top: 30px;
+}
+
+ul {
+  padding-left: 20px;
+}
+
+ul li {
+  margin-bottom: 8px;
+}
+
+.intro, .closing {
+  font-size: 18px;
+  margin-bottom: 20px;
+  color: #555;
+}
+
+.section p {
+  margin: 10px 0;
+  color: #444;
+}
+
+@media (max-width: 600px) {
+  .container {
+    padding: 15px;
+  }
+
+  h1 {
+    font-size: 24px;
+  }
+
+  h2 {
+    font-size: 18px;
+  }
+}
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #004080;
+  padding: 10px 20px;
+  color: white;
+}
+
+.logo {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.active_nav {
+  display: flex;
+  gap: 20px;
+}
+
+.click {
+  text-decoration: none;
+  color: white;
+  font-weight: bold;
+  padding: 8px 10px;
+}
+
+.menu-icon {
+  display: none;
+  font-size: 26px;
+  cursor: pointer;
+}
+
+/* Responsive design */
+@media (max-width: 800px) {
+  .active_nav {
+    display: none;
+    flex-direction: column;
+    background-color: #004080;
+    position: absolute;
+    top: 60px;
+    right: 0;
+    width: 100%;
+    text-align: center;
+  }
+
+  .active_nav.show {
+    display: flex;
+  }
+
+  .menu-icon {
+    display: block;
+  }
+}

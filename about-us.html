@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us</title>
+    <!-- <link rel="stylesheet" href="./css/home.css"> -->
+    <link rel="stylesheet" href="about.css">
+</head>
+<body>
+
+      <header>
+  <div class="head_nav">
+    <div class="logo">
+      <a href="home.html" class="h">🚌 Bus Booking</a>
+    </div>
+
+    <div class="menu-toggle" id="menu-toggle">&#9776;</div> <!-- Hamburger icon -->
+
+    <div class="active_nav" id="nav-links">
+      <a href="home.html" class="click">Home</a>
+      <a href="booking.html" class="click">Ticket Booking</a>
+      <a href="about-us.html" class="click">About us</a>
+      <a href="login.html" id="auth-link">
+        <button class="auth-link">Sign In</button>
+      </a>
+    </div>
+  </div>
+</header>
+    <main>
+         <div class="container">
+            <div>
+                <h1>About Us</h1>
+      <p class="intro">Welcome to <strong>Student Bus Booking</strong>, your trusted travel partner <br>for hassle-free and reliable bus bookings, specially designed for students!</p>
+      
+            </div>
+      <div class="section">
+        <h2>🚍 What We Do</h2>
+        <ul>
+          <li>Book seats in advance to avoid last-minute stress</li>
+          <li>Choose pickup points and exam centers easily</li>
+          <li>Receive instant confirmations and PDF tickets</li>
+          <li>Track booking history and download past tickets</li>
+          <li>Pay securely using integrated payment options</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h2>🎯 Our Mission</h2>
+        <p>To make student travel <strong>efficient</strong>, <strong>affordable</strong>, and <strong>stress-free</strong> by leveraging technology, smart planning, and user-centric design.</p>
+      </div>
+
+      <div class="section">
+        <h2>🧑‍💻 Built by Students, for Students</h2>
+        <p>We are a passionate team of students who faced the same travel struggles you do. That’s why we’ve built this system to simplify every step—from searching for available buses to boarding one with confidence.</p>
+      </div>
+
+      <p class="closing">Whether you're traveling for an exam or heading home after a long semester, we’re here to help you ride with ease.</p>
+    </div>
+         <footer class="footer">
+      <div class="vaibhav">
+        <div class="footer-container">
+          <div class="footer-logo">
+            <h2>🚌 Bus Booking</h2>
+            <p class="footer-info">Your travel partner for exams, events, and more.</p>
+          </div>
+
+          <div class="footer-links">
+            <h3>Quick Links</h3>
+            <ul>
+              <li class="link-nav"><a href="home.html" class="footer-info">Home</a></li>
+              <li class="link-nav"><a href="#" class="footer-info">Profile</a></li>
+              <li class="link-nav"><a href="about-us.html" class="footer-info">About Us</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-contact">
+            <h3 class="footer-info">Contact</h3>
+            <p class="footer-info">Email: support@busbooking.com</p>
+            <p class="footer-info">Phone: +91 98765 43210</p>
+            <p class="footer-info">Mathura, Uttar Pradesh</p>
+          </div>
+        </div>
+
+        <div class="footer-bottom">
+          <p style="color: white;">© 2025 Bus Booking. All rights reserved.</p>
+        </div>
+      </div>
+    </footer> 
+    </main>
+    
+</body>
+
+<script>
+    document.getElementById('menu-toggle').addEventListener('click', () => {
+  document.querySelector('.active_nav').classList.toggle('show');
+});
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const token = localStorage.getItem("studentToken");
+      const studentName = localStorage.getItem("studentName");
+      const navDiv = document.querySelector('.active_nav');
+
+      if (token && navDiv) {
+        const signInBtn = navDiv.querySelector('.auth-link');
+        if (signInBtn) signInBtn.remove();
+
+        const welcomeSpan = document.createElement("span");
+        welcomeSpan.textContent = `👋 Welcome, ${studentName || "Student"}`;
+        welcomeSpan.style.color = "white";
+        welcomeSpan.style.marginRight = "10px";
+        navDiv.appendChild(welcomeSpan);
+
+        const ticketLink = document.createElement("a");
+        ticketLink.href = "ticket.html";
+        ticketLink.className = "click";
+        ticketLink.textContent = "My Ticket";
+        navDiv.appendChild(ticketLink);
+
+        const logoutBtn = document.createElement("button");
+        logoutBtn.className = "auth-link";
+        logoutBtn.textContent = "Logout";
+        logoutBtn.onclick = () => {
+          localStorage.removeItem("studentToken");
+          localStorage.removeItem("studentName");
+          alert("Logged out successfully!");
+          window.location.href = "home.html";
+        };
+        navDiv.appendChild(logoutBtn);
+      }
+    });
+  </script>
+</html>

@@ -1,0 +1,171 @@
+<!-- payment.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Payment - Bus Booking</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 30px;
+      background: #f9f9f9;
+    }
+    #bookingDetails {
+      margin-bottom: 20px;
+      background: #fff;
+      padding: 20px;
+      border-radius: 6px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    button {
+      padding: 12px 20px;
+      font-size: 18px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    button:disabled {
+      background-color: #aaa;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+   <footer class="footer">
+      <div class="vaibhav">
+        <div class="footer-container">
+          <div class="footer-logo">
+            <h2>🚌 Bus Booking</h2>
+            <p class="footer-info">Your travel partner for exams, events, and more.</p>
+          </div>
+
+          <div class="footer-links">
+            <h3>Quick Links</h3>
+            <ul>
+              <li class="link-nav"><a href="home.html" class="footer-info">Home</a></li>
+              <li class="link-nav"><a href="#" class="footer-info">Profile</a></li>
+              <li class="link-nav"><a href="about-us.html" class="footer-info">About Us</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-contact">
+            <h3 class="footer-info">Contact</h3>
+            <p class="footer-info">Email: support@busbooking.com</p>
+            <p class="footer-info">Phone: +91 98765 43210</p>
+            <p class="footer-info">Mathura, Uttar Pradesh</p>
+          </div>
+        </div>
+
+        <div class="footer-bottom">
+          <p style="color: white;">© 2025 Bus Booking. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+  <h2>🧾 Confirm Your Booking & Pay</h2>
+  <div id="bookingDetails"></div>
+  <button id="payBtn">Pay Now</button>
+
+  <script>
+    const bookingDetails = JSON.parse(localStorage.getItem('bookingDetails'));
+    const studentToken = localStorage.getItem('studentToken');
+    const payBtn = document.getElementById('payBtn');
+    const bookingDiv = document.getElementById('bookingDetails');
+
+    if (!bookingDetails || !studentToken) {
+      bookingDiv.innerHTML = '<p style="color:red;">❌ Invalid booking session</p>';
+      payBtn.disabled = true;
+    } else {
+      bookingDiv.innerHTML = `
+        <p><strong>👤 Student:</strong> ${localStorage.getItem('studentName') || 'Student'}</p>
+        <p><strong>🗓 Date:</strong> ${bookingDetails.date}</p>
+        <p><strong>📍 Pickup Point:</strong> ${bookingDetails.pickup}</p>
+        <p><strong>🏫 Exam Center:</strong> ${bookingDetails.examCenter}</p>
+        <p><strong>🕒 Time:</strong> ${bookingDetails.time}</p>
+        <p><strong>💰 Price:</strong> ₹${bookingDetails.price}</p>
+      `;
+    }
+
+    payBtn.addEventListener('click', async () => {
+  payBtn.disabled = true;
+  payBtn.textContent = 'Processing...';
+
+  try {
+    const res = await fetch('/bookings', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${studentToken}`
+      },
+      body: JSON.stringify({
+        date: bookingDetails.date,
+        pickup: bookingDetails.pickup,        
+        examCenter: bookingDetails.examCenter,
+        time: bookingDetails.time,
+        busName: bookingDetails.busName || 'Bus 1',  
+        price: bookingDetails.price || 0           
+      })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok || !data.booking) {
+      throw new Error(data.message || 'Booking failed');
+    }
+
+    alert('✅ Booking successful! Booking ID: ' + data.booking._id);
+    localStorage.removeItem('bookingDetails');
+    window.location.href = 'ticket.html';
+
+  } catch (err) {
+    console.error('❌ Error:', err.message);
+    alert('❌ Error: ' + err.message);
+    payBtn.disabled = false;
+    payBtn.textContent = 'Pay Now';
+  }
+});
+
+  </script>
+  <script>
+    document.getElementById('menu-toggle').addEventListener('click', () => {
+  document.querySelector('.active_nav').classList.toggle('show');
+});
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const token = localStorage.getItem("studentToken");
+      const studentName = localStorage.getItem("studentName");
+      const navDiv = document.querySelector('.active_nav');
+
+      if (token && navDiv) {
+        const signInBtn = navDiv.querySelector('.auth-link');
+        if (signInBtn) signInBtn.remove();
+
+        const welcomeSpan = document.createElement("span");
+        welcomeSpan.textContent = `👋 Welcome, ${studentName || "Student"}`;
+        welcomeSpan.style.color = "white";
+        welcomeSpan.style.marginRight = "10px";
+        navDiv.appendChild(welcomeSpan);
+
+        const ticketLink = document.createElement("a");
+        ticketLink.href = "ticket.html";
+        ticketLink.className = "click";
+        ticketLink.textContent = "My Ticket";
+        navDiv.appendChild(ticketLink);
+
+        const logoutBtn = document.createElement("button");
+        logoutBtn.className = "auth-link";
+        logoutBtn.textContent = "Logout";
+        logoutBtn.onclick = () => {
+          localStorage.removeItem("studentToken");
+          localStorage.removeItem("studentName");
+          alert("Logged out successfully!");
+          window.location.href = "home.html";
+        };
+        navDiv.appendChild(logoutBtn);
+      }
+    });
+  </script>
+</body>
+</html>
